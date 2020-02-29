@@ -87,33 +87,36 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     openList = util.Stack()
     closeList = []
     parents = {}
     root = problem.getStartState()
-    openList.push(root)
-    node = ()
+    successorsRoot = problem.getSuccessors(root)
+    for successor in successorsRoot:
+        openList.push(successor)
     path = []
+    next = ()
     while not openList.isEmpty():
-        node = openList.pop()
+        next = openList.pop()
+        node, _, _ = next
         if problem.isGoalState(node):
             print("Success")
             break
         else:
             successors = problem.getSuccessors(node)
-            closeList.append(node)
-            for successor, _, _ in successors:
+            closeList.append(next)
+            for successor in successors:
                 if successor not in openList.list and successor not in closeList:
                     openList.push(successor)
-                    parents[successor] = node
-    while root != node:
-        path.insert(0, node)
-        node = parents[node]
-    path.insert(0, node)
+                    parents[successor] = next
+    while next not in successorsRoot:
+        _, direction,_ = next
+        path.insert(0, direction)
+        next = parents[next]
+    _, direction, _ = next
+    path.insert(0, direction)
     print(path)
+    return path
 #    util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
