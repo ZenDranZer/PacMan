@@ -115,7 +115,6 @@ def depthFirstSearch(problem):
         next = parents[next]
     _, direction, _ = next
     path.insert(0, direction)
-    print(path)
     return path
 #    util.raiseNotDefined()
 
@@ -125,31 +124,35 @@ def breadthFirstSearch(problem):
 
     open = util.Queue()
     start = problem.getStartState()
-    open.push(start)
+    startSuccessor = problem.getSuccessors(start)
+    for successor in startSuccessor:
+        open.push(successor)
     final_path = []
     X = ()
     closed = util.Queue()
     parent = {}
     while not open.isEmpty():
-        X = open.pop()
+        next = open.pop()
+        X, _, _ = next
         if (problem.isGoalState(X)):
             print("success")
+            break
         else:
             X_children = problem.getSuccessors(X)
-            closed.push(X)
-            for child,_,_ in X_children:
+            closed.push(next)
+            for child in X_children:
                 if child not in open.list and child not in closed.list:
                     open.push(child)
-                    parent[child] = X
+                    parent[child] = next
 
-    while start != X:
-        final_path.insert(0,X)
-        X = parent[X]
-
-    final_path.insert(0,X)
-
+    while next not in startSuccessor:
+        _, direction, _ = next
+        final_path.insert(0,direction)
+        next = parent[next]
+    _, direction, _ = next
+    final_path.insert(0, direction)
     print(final_path)
-
+    return final_path
     #util.raiseNotDefined()
 
 def uniformCostSearch(problem):
