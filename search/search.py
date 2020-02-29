@@ -119,12 +119,59 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    open = util.Queue()
+    start = problem.getStartState()
+    open.push(start)
+    final_path = []
+    X = ()
+    closed = util.Queue()
+    parent = {}
+    while not open.isEmpty():
+        X = open.pop()
+        if (problem.isGoalState(X)):
+            print("success")
+        else:
+            X_children = problem.getSuccessors(X)
+            closed.push(X)
+            for child,_,_ in X_children:
+                if child not in open.list and child not in closed.list:
+                    open.push(child)
+                    parent[child] = X
+
+    while start != X:
+        final_path.insert(0,X)
+        X = parent[X]
+
+    final_path.insert(0,X)
+
+    print(final_path)
+
+    #util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    print(problem.getStartState())
+    open = util.PriorityQueue()
+    open.push(problem.getStartState())
+    final_path = []
+    closed = util.Queue()
+    while not open.isEmpty():
+        X = open.pop()
+        if (problem.isGoalState(X)):
+            final_path.append(X)
+            print("success")
+        else:
+            X_children = problem.getSuccessors(X)
+            closed.push(X)
+            for child,_,_ in X_children:
+                if child not in open.list and child not in closed.list:
+                    open.push(child)
+
+
+
+    #util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
     """
