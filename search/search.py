@@ -111,6 +111,7 @@ def depthFirstSearch(problem):
                     parents[successor] = next
     while next not in successorsRoot:
         _, direction,_ = next
+        # print(next)
         path.insert(0, direction)
         next = parents[next]
     _, direction, _ = next
@@ -151,7 +152,7 @@ def breadthFirstSearch(problem):
         next = parent[next]
     _, direction, _ = next
     final_path.insert(0, direction)
-    #print(final_path)
+    # print(final_path)
     return final_path
     #util.raiseNotDefined()
 
@@ -162,10 +163,12 @@ def uniformCostSearch(problem):
     open = util.PriorityQueue()
     start = problem.getStartState()
     startSuccessor = problem.getSuccessors(start)
-    i = 1
+    costFn = problem.costFn
     for successor in startSuccessor:
-        open.push(successor,i)
-        i = i + 1
+        pos, _, _ = successor
+        pos = list(pos)
+        open.push(successor, costFn(pos))
+
     final_path = []
     closed = util.Queue()
     parent = {}
@@ -180,10 +183,10 @@ def uniformCostSearch(problem):
             closed.push(next)
             for child in X_children:
                 if child not in open.heap and child not in closed.list:
-                    open.push(child,i)
-                    i = i + 1
+                    pos, _, _ = child
+                    pos = list(pos)
+                    open.push(child, costFn(pos))
                     parent[child] = next
-
     while next not in startSuccessor:
         _, direction, _ = next
         final_path.insert(0,direction)
