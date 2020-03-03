@@ -135,7 +135,7 @@ def breadthFirstSearch(problem):
         next = open.pop()
         X, _, _ = next
         if (problem.isGoalState(X)):
-            print("success")
+            #print("success")
             break
         else:
             X_children = problem.getSuccessors(X)
@@ -151,32 +151,47 @@ def breadthFirstSearch(problem):
         next = parent[next]
     _, direction, _ = next
     final_path.insert(0, direction)
-    print(final_path)
+    #print(final_path)
     return final_path
     #util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    print(problem.getStartState())
+
     open = util.PriorityQueue()
-    open.push(problem.getStartState())
+    start = problem.getStartState()
+    startSuccessor = problem.getSuccessors(start)
+    i = 1
+    for successor in startSuccessor:
+        open.push(successor,i)
+        i = i + 1
     final_path = []
     closed = util.Queue()
+    parent = {}
     while not open.isEmpty():
-        X = open.pop()
+        next = open.pop()
+        X, _, _ = next
         if (problem.isGoalState(X)):
-            final_path.append(X)
-            print("success")
+            #print("success")
+            break
         else:
             X_children = problem.getSuccessors(X)
-            closed.push(X)
-            for child,_,_ in X_children:
-                if child not in open.list and child not in closed.list:
-                    open.push(child)
+            closed.push(next)
+            for child in X_children:
+                if child not in open.heap and child not in closed.list:
+                    open.push(child,i)
+                    i = i + 1
+                    parent[child] = next
 
-
-
+    while next not in startSuccessor:
+        _, direction, _ = next
+        final_path.insert(0,direction)
+        next = parent[next]
+    _, direction, _ = next
+    final_path.insert(0, direction)
+    #print(final_path)
+    return final_path
     #util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
