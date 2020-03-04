@@ -18,6 +18,7 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+import searchAgents
 
 class SearchProblem:
     """
@@ -72,6 +73,7 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
+
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
@@ -88,114 +90,102 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
     openList = util.Stack()
-    closeList = []
-    parents = {}
+    closeList = util.Stack()
     root = problem.getStartState()
-    successorsRoot = problem.getSuccessors(root)
-    for successor in successorsRoot:
-        openList.push(successor)
-    path = []
-    next = ()
+    openList.push(root)
+    parent = {}
     while not openList.isEmpty():
         next = openList.pop()
-        node, _, _ = next
-        if problem.isGoalState(node):
+        if problem.isGoalState(next):
             print("Success")
             break
         else:
-            successors = problem.getSuccessors(node)
-            closeList.append(next)
-            for successor in successors:
-                if successor not in openList.list and successor not in closeList:
+            successors = problem.getSuccessors(next)
+            closeList.push(next)
+            for successor, direction, _ in successors:
+                if successor not in openList.list and successor not in closeList.list:
                     openList.push(successor)
-                    parents[successor] = next
-    while next not in successorsRoot:
-        _, direction,_ = next
-        # print(next)
+                    parent[successor] = (next, direction)
+    path = []
+    while next != root:
+        next, direction = parent[next]
         path.insert(0, direction)
-        next = parents[next]
-    _, direction, _ = next
-    path.insert(0, direction)
     return path
-#    util.raiseNotDefined()
+
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+    path = []
+    if type(problem) == searchAgents.PositionSearchProblem:
+        root = problem.getStartState()
+        path = bfsForPSP(problem, root)
+    if type(problem) == searchAgents.CornersProblem:
+        path = bfsForCP(problem)
+    return path
 
-    open = util.Queue()
-    start = problem.getStartState()
-    startSuccessor = problem.getSuccessors(start)
-    for successor in startSuccessor:
-        open.push(successor)
-    final_path = []
-    X = ()
-    closed = util.Queue()
+
+def bfsForPSP(problem,root):
+    openList = util.Queue()
+    closeList = util.Queue()
+    openList.push(root)
     parent = {}
-    while not open.isEmpty():
-        next = open.pop()
-        X, _, _ = next
-        if (problem.isGoalState(X)):
-            #print("success")
+    while not openList.isEmpty():
+        next = openList.pop()
+        if problem.isGoalState(next):
+            print("Success")
             break
         else:
-            X_children = problem.getSuccessors(X)
-            closed.push(next)
-            for child in X_children:
-                if child not in open.list and child not in closed.list:
-                    open.push(child)
-                    parent[child] = next
+            successors = problem.getSuccessors(next)
+            closeList.push(next)
+            for successor, direction, _ in successors:
+                if successor not in openList.list and successor not in closeList.list:
+                    openList.push(successor)
+                    parent[successor] = (next, direction)
+    path = []
+    while next != root:
+        next, direction = parent[next]
+        path.insert(0, direction)
+    return path
 
-    while next not in startSuccessor:
-        _, direction, _ = next
-        final_path.insert(0,direction)
-        next = parent[next]
-    _, direction, _ = next
-    final_path.insert(0, direction)
-    # print(final_path)
-    return final_path
-    #util.raiseNotDefined()
+
+def bfsForCP(problem):
+    startstate, cornors = problem.getStartState()
+    path = []
+    nextCornor = (1, 1)
+    while len(cornors) != 0:
+        path = path + bfsForPSP(problem, startstate)
+        startstate = nextCornor
+        if len(cornors) != 0:
+            nextCornor = cornors[0]
+    return path
+
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-
-    open = util.PriorityQueue()
-    start = problem.getStartState()
-    startSuccessor = problem.getSuccessors(start)
-    costFn = problem.costFn
-    for successor in startSuccessor:
-        pos, _, _ = successor
-        pos = list(pos)
-        open.push(successor, costFn(pos))
-
-    final_path = []
-    closed = util.Queue()
+    openList = util.PriorityQueue()
+    closeList = util.Queue()
+    root = problem.getStartState()
+    openList.push(root, 0)
     parent = {}
-    while not open.isEmpty():
-        next = open.pop()
-        X, _, _ = next
-        if (problem.isGoalState(X)):
-            #print("success")
+    while not openList.isEmpty():
+        next = openList.pop()
+        if problem.isGoalState(next):
+            print("Success")
             break
         else:
-            X_children = problem.getSuccessors(X)
-            closed.push(next)
-            for child in X_children:
-                if child not in open.heap and child not in closed.list:
-                    pos, _, _ = child
-                    pos = list(pos)
-                    open.push(child, costFn(pos))
-                    parent[child] = next
-    while next not in startSuccessor:
-        _, direction, _ = next
-        final_path.insert(0,direction)
-        next = parent[next]
-    _, direction, _ = next
-    final_path.insert(0, direction)
-    #print(final_path)
-    return final_path
-    #util.raiseNotDefined()
+            successors = problem.getSuccessors(next)
+            closeList.push(next)
+            for successor, direction, cost in successors:
+                if successor not in openList.heap and successor not in closeList.list:
+                    openList.push(successor,cost)
+                    parent[successor] = (next, direction)
+    path = []
+    while next != root:
+        next, direction = parent[next]
+        path.insert(0, direction)
+    return path
 
 def nullHeuristic(state, problem=None):
     """
@@ -207,44 +197,31 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    open = util.PriorityQueue()
-    start = problem.getStartState()
-    startSuccessor = problem.getSuccessors(start)
-    costFn = lambda pos: .5 ** pos[0]
-    for successor in startSuccessor:
-        pos, _, _ = successor
-        pos = list(pos)
-        priority = costFn(pos) + heuristic(pos, problem)
-        open.push(successor, priority)
-
-    final_path = []
-    closed = util.Queue()
+    openList = util.PriorityQueue()
+    closeList = util.Queue()
+    root = problem.getStartState()
+    openList.push(root, 0)
     parent = {}
-    while not open.isEmpty():
-        next = open.pop()
-        X, _, _ = next
-        if (problem.isGoalState(X)):
-            # print("success")
+    # problem.costFn = lambda pos: 2 ** pos[0]
+    while not openList.isEmpty():
+        next = openList.pop()
+        if problem.isGoalState(next):
+            print("Success")
             break
         else:
-            X_children = problem.getSuccessors(X)
-            closed.push(next)
-            for child in X_children:
-                if child not in open.heap and child not in closed.list:
-                    pos, _, _ = child
-                    pos = list(pos)
-                    priority = costFn(pos) + heuristic(pos, problem)
-                    open.push(child, priority)
-                    parent[child] = next
-    while next not in startSuccessor:
-        _, direction, _ = next
-        final_path.insert(0, direction)
-        next = parent[next]
-    _, direction, _ = next
-    final_path.insert(0, direction)
-    # print(final_path)
-    return final_path
-    # util.raiseNotDefined()
+            successors = problem.getSuccessors(next)
+            closeList.push(next)
+            for successor, direction, cost in successors:
+                if successor not in openList.heap and successor not in closeList.list:
+                    openList.push(successor, cost+heuristic(successor,problem))
+                    parent[successor] = (next, direction)
+    path = []
+    while next != root:
+        next, direction = parent[next]
+        path.insert(0, direction)
+    return path
+
+
 
 
 # Abbreviations

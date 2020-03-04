@@ -1,0 +1,63 @@
+***POSITION SEARCH PROBLEM***
+
+DFS:
+tinyMaze - cost 10, Search node expanded 14
+mediumMaze - cost 130, search node expanded 144
+bigMaze - cost 210, search node expanded 390
+
+BFS:
+tinyMaze - cost 8, Search node expanded 15
+mediumMaze - cost 68, search node expanded 269
+bigMaze - cost 210, search node expanded 620
+
+UCS(c=1):
+tinyMaze - cost 8, Search node expanded 16
+mediumMaze - cost 68, search node expanded 275
+bigMaze - cost 210, search node expanded 620
+
+UCS(c=0.5):
+tinyMaze - cost 1, Search node expanded 14
+mediumMaze - cost 1, search node expanded 287
+bigMaze - cost 5, search node expanded 636
+mediumDottedMaze - cost 1, search node expanded 210
+mediumScaryMaze - cost 1, search node expanded 1521 !!!eaten by ghost!!!
+
+UCS(c=2):
+tinyMaze - cost 48, Search node expanded 10
+mediumMaze - cost 17183280440, search node expanded 169
+bigMaze - cost 590401735138, search node expanded 461
+mediumDottedMaze - cost 17183894840, search node expanded 164
+mediumScaryMaze - cost 68719479864, search node expanded 98
+
+
+A*(Manhattan + c=1):
+mediumMaze - cost 76 search node expanded 81
+bigMaze - cost 210 search node expanded 466
+openMaze - cost 68 search node expanded 245
+
+A*(Manhattan + c=0.5):
+mediumMaze - cost 1 search node expanded 81
+bigMaze - cost 5 search node expanded 468
+
+A*(Manhattan + c=2):
+mediumMaze - cost 17183280440 search node expanded 166
+bigMaze - cost 590401735138 search node expanded 432
+
+
+A*(Euclidean  + c=1):
+mediumMaze - cost 152 search node expanded 159
+bigMaze - cost 210 search node expanded 471
+openMaze - cost 54 search node expanded 54
+
+A*(Euclidean  + c=0.5):
+mediumMaze - cost 10 search node expanded 159
+bigMaze - cost 5 search node expanded 471
+
+A*(Euclidean  + c=2):
+mediumMaze - cost 17183280440 search node expanded 166
+bigMaze - cost 590401735138 search node expanded 431
+
+
+
+***CORNERS PROBLEM***
+
