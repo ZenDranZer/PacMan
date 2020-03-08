@@ -89,103 +89,87 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    openList = util.Stack()
-    closeList = util.Stack()
+    openList = util.Stack()                         # initialize an empty stack
+    closeList = []                                  # Initialize a list for the explored vertices
     root = problem.getStartState()
-    openList.push(root)
-    parent = {}
+    # Each element in a stack is steps from the root to the vertex itself.
+    openList.push([(root, "Start", 0)])             # push the root into the stack
+
     while not openList.isEmpty():
-        next = openList.pop()
-        if problem.isGoalState(next):
-            print("Success")
-            break
-        else:
+        steps = openList.pop()                      # pop the top most element from the stack
+        # the next vertex to be explored will be the last vertex in the steps
+        next = steps[-1][0]
+
+        if problem.isGoalState(next):               # if goal is reached then
+            return [step[1] for step in steps][1:]  # return all the directions to reach goal except the root "Start"
+
+        if next not in closeList:                   # if vertex is not in explored vertices list then
+            closeList.append(next)                  # add it to explored list and generate its successors
             successors = problem.getSuccessors(next)
-            closeList.push(next)
-            for successor, direction, _ in successors:
-                if successor not in openList.list and successor not in closeList.list:
-                    openList.push(successor)
-                    parent[successor] = (next, direction)
-    path = []
-    while next != root:
-        next, direction = parent[next]
-        path.insert(0, direction)
-    return path
+            for successor in successors:            # for each successor if not visited then
+                if successor[0] not in closeList:
+                    successorSteps = steps[:]       # add it to the stack along with steps from root to the successor
+                    successorSteps.append(successor)
+                    openList.push(successorSteps)
+    return []                                    # if no goal exist then return false
 
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    path = []
-    if type(problem) == searchAgents.PositionSearchProblem:
-        root = problem.getStartState()
-        path = bfsForPSP(problem, root)
-    if type(problem) == searchAgents.CornersProblem:
-        path = bfsForCP(problem)
-    return path
+    openList = util.Queue()                         # initialize an empty stack
+    closeList = []                                  # Initialize a list for the explored vertices
+    root = problem.getStartState()
+    # Each element in a queue is steps from the root to the vertex itself.
+    openList.push([(root, "Start", 0)])             # enqueue the root into the queue
 
-
-def bfsForPSP(problem,root):
-    openList = util.Queue()
-    closeList = util.Queue()
-    openList.push(root)
-    parent = {}
     while not openList.isEmpty():
-        next = openList.pop()
-        if problem.isGoalState(next):
-            print("Success")
-            break
-        else:
+        steps = openList.pop()                      # pop the left most element from the queue
+        # the next vertex to be explored will be the last vertex in the steps
+        next = steps[-1][0]
+        if problem.isGoalState(next):               # if goal is reached then
+            return [step[1] for step in steps][1:]  # return all the directions to reach goal except the root "Start"
+
+        if next not in closeList:                   # if vertex is not in explored vertices list then
+            closeList.append(next)                  # add it to explored list and generate its successors
             successors = problem.getSuccessors(next)
-            closeList.push(next)
-            for successor, direction, _ in successors:
-                if successor not in openList.list and successor not in closeList.list:
-                    openList.push(successor)
-                    parent[successor] = (next, direction)
-    path = []
-    while next != root:
-        next, direction = parent[next]
-        path.insert(0, direction)
-    return path
-
-
-def bfsForCP(problem):
-    startstate, cornors = problem.getStartState()
-    path = []
-    nextCornor = (1, 1)
-    while len(cornors) != 0:
-        path = path + bfsForPSP(problem, startstate)
-        startstate = nextCornor
-        if len(cornors) != 0:
-            nextCornor = cornors[0]
-    return path
-
+            for successor in successors:            # for each successor if not visited then
+                if successor[0] not in closeList:
+                    successorSteps = steps[:]       # add it to the stack along with steps from root to the successor
+                    successorSteps.append(successor)
+                    openList.push(successorSteps)
+    return []                                    # if no goal exist then return false
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    openList = util.PriorityQueue()
-    closeList = util.Queue()
+    # The cost function takes the path from root to the vertex and calculate the cost of each edge except root
+    function = lambda steps: problem.getCostOfActions([step[1] for step in steps][1:])
+
+    openList = util.PriorityQueueWithFunction(function)     # Initialize a priority queue with the cost function
+    closeList = []                                          # Initialize a list for the explored vertices
     root = problem.getStartState()
-    openList.push(root, 0)
-    parent = {}
+    # Each element in a queue is steps from the root to the vertex itself.
+    openList.push([(root, "Start", 0)])
+
     while not openList.isEmpty():
-        next = openList.pop()
-        if problem.isGoalState(next):
-            print("Success")
-            break
-        else:
+        steps = openList.pop()                              # pop the left most element from the queue
+        # the next vertex to be explored will be the last vertex in the steps
+        next = steps[-1][0]
+        if problem.isGoalState(next):                       # if goal is reached then
+            # return all the directions to reach goal except the root "Start"
+            return [step[1] for step in steps][1:]
+
+        if next not in closeList:                           # if vertex is not in explored vertices list then
+            closeList.append(next)                          # add it to explored list and generate its successors
             successors = problem.getSuccessors(next)
-            closeList.push(next)
-            for successor, direction, cost in successors:
-                if successor not in openList.heap and successor not in closeList.list:
-                    openList.push(successor,cost)
-                    parent[successor] = (next, direction)
-    path = []
-    while next != root:
-        next, direction = parent[next]
-        path.insert(0, direction)
-    return path
+            for successor in successors:                    # for each successor if not visited then
+                if successor[0] not in closeList:
+                    successorSteps = steps[:]
+                    # add it to the stack along with steps from root to the successor
+                    successorSteps.append(successor)
+                    openList.push(successorSteps)
+    return []                                            # if no goal exist then return false
 
 def nullHeuristic(state, problem=None):
     """
@@ -197,30 +181,34 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    openList = util.PriorityQueue()
-    closeList = util.Queue()
-    root = problem.getStartState()
-    openList.push(root, 0)
-    parent = {}
-    # problem.costFn = lambda pos: 2 ** pos[0]
-    while not openList.isEmpty():
-        next = openList.pop()
-        if problem.isGoalState(next):
-            print("Success")
-            break
-        else:
-            successors = problem.getSuccessors(next)
-            closeList.push(next)
-            for successor, direction, cost in successors:
-                if successor not in openList.heap and successor not in closeList.list:
-                    openList.push(successor, cost+heuristic(successor,problem))
-                    parent[successor] = (next, direction)
-    path = []
-    while next != root:
-        next, direction = parent[next]
-        path.insert(0, direction)
-    return path
+    # The cost function takes the path from root to the vertex and calculate the cost of each edge except root
+    # and adds the heuristic value to provide more information to prioritise exploration
+    function = lambda steps: problem.getCostOfActions([step[1] for step in steps][1:]) + heuristic(steps[-1][0], problem)
 
+    openList = util.PriorityQueueWithFunction(function)       # Initialize a priority queue with the cost function
+    closeList = []                                            # Initialize a list for the explored vertices
+    root = problem.getStartState()
+    # Each element in a queue is steps from the root to the vertex itself.
+    openList.push([(root, "Start", 0)])
+
+    while not openList.isEmpty():
+        steps = openList.pop()                                # pop the left most element from the queue
+        # the next vertex to be explored will be the last vertex in the steps
+        next = steps[-1][0]
+        if problem.isGoalState(next):                         # if goal is reached then
+            # return all the directions to reach goal except the root "Start"
+            return [step[1] for step in steps][1:]
+
+        if next not in closeList:                             # if vertex is not in explored vertices list then
+            closeList.append(next)                            # add it to explored list and generate its successors
+            successors = problem.getSuccessors(next)
+            for successor in successors:                      # for each successor if not visited then
+                if successor[0] not in closeList:
+                    successorSteps = steps[:]
+                    # add it to the stack along with steps from root to the successor
+                    successorSteps.append(successor)
+                    openList.push(successorSteps)
+    return []                                              # if no goal exist then return false
 
 
 
