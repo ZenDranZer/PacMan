@@ -512,8 +512,14 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
+
+        ## The below code finds the closest dot considering pacmans position
+        x1, y1 = startPosition
+        distance = [mazeDistance((x1,y1), (x2,y2),gameState) for x2,y2 in food]
+        goal = food(distance.index(min(distance)))
+
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        #util.raiseNotDefined()
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
