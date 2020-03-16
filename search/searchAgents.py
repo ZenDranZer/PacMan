@@ -476,10 +476,17 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     foodlist = foodGrid.asList()
+
+    ## Checks if the current state is the goal state. If yes, it returns 0.
     if problem.isGoalState(state):
        return 0
-    x2, y2 = position
-    distance = [mazeDistance((x2, y2), (x1, y1), problem.startingGameState) for x1, y1 in foodlist]
+
+    '''Calculate the maze distance of Pacmans starting point(position) with all the food locations and find
+     the food point which is at a maximum distance from current position. This is done so that all the food
+     points in the path from position to the farthest point are eaten and thus the calculation reduces 
+     drastically.'''
+
+    distance = [mazeDistance(position, (x1, y1), problem.startingGameState) for x1, y1 in foodlist]
     return max(distance)
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -513,7 +520,6 @@ class ClosestDotSearchAgent(SearchAgent):
         distance = [mazeDistance((x1,y1), (x2,y2),gameState) for x2,y2 in foodlist]
         goal = foodlist[distance.index(min(distance))]
         prob = PositionSearchProblem(gameState, start=startPosition, goal=goal, warn=False, visualize=False)
-        "*** YOUR CODE HERE ***"
         return search.bfs(prob)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
