@@ -420,9 +420,10 @@ class FoodSearchProblem:
             x, y = state[0]
             dx, dy = Actions.directionToVector(direction)
             nextx, nexty = int(x + dx), int(y + dy)
-            if not self.walls[nextx][nexty]:
-                nextFood = state[1].copy()
-                nextFood[nextx][nexty] = False
+            if not self.walls[nextx][nexty]:                  # If the successor is legit then mark the food as eaten.
+                nextFood = state[1].copy()                    # Copy the current state of food grid.
+                nextFood[nextx][nexty] = False                # Mark the food as eaten.
+                # send the successors with updated foodGrid.
                 successors.append( ( ((nextx, nexty), nextFood), direction, 1) )
         return successors
 
@@ -481,11 +482,10 @@ def foodHeuristic(state, problem):
     if problem.isGoalState(state):
        return 0
 
-    '''Calculate the maze distance of Pacmans starting point(position) with all the food locations and find
-     the food point which is at a maximum distance from current position. This is done so that all the food
-     points in the path from position to the farthest point are eaten and thus the calculation reduces 
-     drastically.'''
-
+    # Calculate the maze distance of Pacmans starting point(position) with all the food locations and find
+    # the food point which is at a maximum distance from current position. This is done so that all the food
+    # points in the path from position to the farthest point are eaten and thus the calculation reduces
+    # drastically.
     distance = [mazeDistance(position, (x1, y1), problem.startingGameState) for x1, y1 in foodlist]
     return max(distance)
 
@@ -514,11 +514,14 @@ class ClosestDotSearchAgent(SearchAgent):
         # Here are some useful elements of the startState
         startPosition = gameState.getPacmanPosition()
         food = gameState.getFood()
-        ## The below code finds the closest dot considering pacmans position
+        # The below code finds the closest dot considering pacmans position
         x1, y1 = startPosition
         foodlist = food.asList()
+        # for each food position find the distance from the current state
         distance = [mazeDistance((x1,y1), (x2,y2),gameState) for x2,y2 in foodlist]
+        # find the closest dot with minimum distance and get the coordinates.
         goal = foodlist[distance.index(min(distance))]
+        # Run a breadth first search from the current position to the nearest goal and return bfs path.
         prob = PositionSearchProblem(gameState, start=startPosition, goal=goal, warn=False, visualize=False)
         return search.bfs(prob)
 
