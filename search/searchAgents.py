@@ -415,9 +415,9 @@ class FoodSearchProblem:
     def getSuccessors(self, state):
         "Returns successor states, the actions they require, and a cost of 1."
         successors = []
-        self._expanded += 1 # DO NOT CHANGE
+        self._expanded += 1  # DO NOT CHANGE
         for direction in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            x,y = state[0]
+            x, y = state[0]
             dx, dy = Actions.directionToVector(direction)
             nextx, nexty = int(x + dx), int(y + dy)
             if not self.walls[nextx][nexty]:
@@ -479,9 +479,7 @@ def foodHeuristic(state, problem):
     if problem.isGoalState(state):
        return 0
     x2, y2 = position
-    #print("position ",position)
     distance = [mazeDistance((x2, y2), (x1, y1), problem.startingGameState) for x1, y1 in foodlist]
-
     return max(distance)
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -509,17 +507,14 @@ class ClosestDotSearchAgent(SearchAgent):
         # Here are some useful elements of the startState
         startPosition = gameState.getPacmanPosition()
         food = gameState.getFood()
-        walls = gameState.getWalls()
-        problem = AnyFoodSearchProblem(gameState)
-
-
         ## The below code finds the closest dot considering pacmans position
         x1, y1 = startPosition
-        distance = [mazeDistance((x1,y1), (x2,y2),gameState) for x2,y2 in food]
-        goal = food(distance.index(min(distance)))
-
+        foodlist = food.asList()
+        distance = [mazeDistance((x1,y1), (x2,y2),gameState) for x2,y2 in foodlist]
+        goal = foodlist[distance.index(min(distance))]
+        prob = PositionSearchProblem(gameState, start=startPosition, goal=goal, warn=False, visualize=False)
         "*** YOUR CODE HERE ***"
-        #util.raiseNotDefined()
+        return search.bfs(prob)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
